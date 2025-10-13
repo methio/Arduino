@@ -3,6 +3,7 @@
 #include <Adafruit_NeoPixel.h>
 
 #include <fade.h>
+#include "config.h"
 
 // doc : https://adafruit.github.io/Adafruit_NeoMatrix/html/class_adafruit___neo_matrix.html
 
@@ -18,12 +19,39 @@ Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(WIDTH, HEIGHT, LEDPIN,
 // uint32_t dww = matrix.ColorHSV(180, 67, 76);
 // uint16_t off = matrix.Color(0, 0, 0);
 
+// set up the feed, where to get data 
+AdafruitIO_Feed *digital = io.feed("color25");
 
 void setup() {
   matrix.begin();
   matrix.setBrightness(40);
 
   Serial.begin(115200);
+
+  // wait for serial monitor to open
+  while(! Serial);
+
+  // connect to io.adafruit.com
+  Serial.print("Connecting to Adafruit IO");
+  io.connect();
+
+  // set up a message handler for the 'digital' feed.
+  // the handleMessage function (defined below)
+  // will be called whenever a message is
+  // received from adafruit io.
+  digital->onMessage(handleMessage);
+
+  // wait for a connection
+  while(io.status() < AIO_CONNECTED) {
+    Serial.print(".");
+    delay(500);
+  }
+
+  // we are connected
+  Serial.println();
+  Serial.println(io.statusText());
+  digital->get();
+
 
   // from fade.h
   generateFadeHue();
@@ -35,32 +63,26 @@ void setup() {
 
 void loop() {
   //from fade.h -> possible to execute rest of code while fading
-  FadeOnce(matrix, 300);
+  // FadeOnce(matrix, 300);
+
+  // keeps client (huzzah32) connected to io.adafruit.com
+  io.run();
+}
+
+// this function is called whenever an 'color' feed message
+// is received from Adafruit IO. it was attached to
+// the 'color' feed in the setup() function above.
+void handleMessage(AdafruitIO_Data *data) {
+
+  // methods for AdafruitIO_Data: https://adafruit.github.io/Adafruit_IO_Arduino/html/class_adafruit_i_o___data.html#af2ae58fda00ca0d775dd1baf5ff39716
+
+  Serial.print("received <- ");
+  Serial.println(data->toString());
+
+  matrix.clear();
+  matrix.fill(data->toNeoPixel());
+  matrix.show();
 }
 
 
-// block code execution to fade
-void full_fade() {
-  /*
-    HSV : hue, saturation, brightness
-      hue	An unsigned 16-bit value, 0 to 65535, representing one full loop of the color wheel, which allows 16-bit hues to "roll over" while still doing the expected thing (and allowing more precision than the wheel() function that was common to prior NeoPixel examples).
-      sat	Saturation, 8-bit value, 0 (min or pure grayscale) to 255 (max or pure hue). Default of 255 if unspecified.
-      val	Value (brightness), 8-bit value, 0 (min / black / off) to 255 (max or full brightness). Default of 255 if unspecified.
-  
-  */ 
-  // uint16_t currentHue = 0; //random(200, 60000);
-  uint32_t currentColor = matrix.ColorHSV(0, 100, 100);
-  uint step = 100;
-  uint speed = 50;
 
-  for(uint16_t currentHue = 0; currentHue <= 65535; currentHue += step){
-    matrix.fillScreen(currentColor);
-    matrix.show();
-    delay(speed);
-    // update color to display
-    currentColor = matrix.gamma32(matrix.ColorHSV(currentHue, 100, 100));
-    Serial.print("hue : ");
-    Serial.println(currentHue);
-
-  }
-}

@@ -41,3 +41,31 @@ void FadeOnce(Adafruit_NeoPixel & r, int speed = 200){
   delay(speed);
   currentFadeStep ++;
 }
+
+
+
+// // block code execution to fade
+// void full_fade() {
+//   /*
+//     HSV : hue, saturation, brightness
+//       hue	An unsigned 16-bit value, 0 to 65535, representing one full loop of the color wheel, which allows 16-bit hues to "roll over" while still doing the expected thing (and allowing more precision than the wheel() function that was common to prior NeoPixel examples).
+//       sat	Saturation, 8-bit value, 0 (min or pure grayscale) to 255 (max or pure hue). Default of 255 if unspecified.
+//       val	Value (brightness), 8-bit value, 0 (min / black / off) to 255 (max or full brightness). Default of 255 if unspecified.
+  
+//   */ 
+//   // uint16_t currentHue = 0; //random(200, 60000);
+//   uint32_t currentColor = matrix.ColorHSV(0, 100, 100);
+//   uint step = 100;
+//   uint speed = 50;
+
+//   for(uint16_t currentHue = 0; currentHue <= 65535; currentHue += step){
+//     matrix.fillScreen(currentColor);
+//     matrix.show();
+//     delay(speed);
+//     // update color to display
+//     currentColor = matrix.gamma32(matrix.ColorHSV(currentHue, 100, 100));
+//     Serial.print("hue : ");
+//     Serial.println(currentHue);
+
+//   }
+// }
