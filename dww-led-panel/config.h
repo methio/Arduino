@@ -1,6 +1,6 @@
 // adafruit IO credentials
 #define IO_USERNAME "methio"
-#define IO_KEY "aio_SnNZ66xBghS1kpAapkeplps7dDRq"
+#define IO_KEY "aio_Pcdt15ROlZChsv9xdLc5S2BrVFo6"
 
 // wifi credentials
 #define WIFI_SSID "thomaswifi"
